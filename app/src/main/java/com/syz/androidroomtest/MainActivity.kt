@@ -1,35 +1,44 @@
 package com.syz.androidroomtest
 
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
+    private var disposable:Disposable?=null
+    private var users = mutableListOf<User>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         add.setOnClickListener {
-            Thread{
-                AppDatabase.instance.userDao().insertAll(User("f","l"),User("ff","ll"))
-            }.start()
+            Observable.range(1,3).observeOn(Schedulers.io()).map {
+                User("f:$it","l:$it")
+            }.subscribeBy {
+                    AppDatabase.instance.userDao().insertAll(it)
+                }
         }
         delete.setOnClickListener {
-            Thread{
-                val users = AppDatabase.instance.userDao().getAll()
-                if(users.isNotEmpty())
-                    AppDatabase.instance.userDao().delete(users[0])
-            }.start()
-        }
-        getUser.setOnClickListener {
-            Thread{
-                var str = ""
-                for (user1 in AppDatabase.instance.userDao().getAll()) {
-                    str += user1.toString()+"\n"
+            Observable.just(users).observeOn(Schedulers.io()).filter { it.isNotEmpty() }
+                .subscribeBy {
+                    AppDatabase.instance.userDao().delete(it[0])
                 }
-                runOnUiThread { getUser.text = str }
-            }.start()
         }
-//
+         disposable = AppDatabase.instance.userDao().getAllUser().map {
+             users = it as MutableList<User>
+            it.size
+        }.observeOn(Schedulers.io()).subscribeOn(AndroidSchedulers.mainThread()).subscribeBy {
+            //数据改变会直接回调到这里
+             getUser.text = "data size : $it"
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposable?.dispose()
     }
 }
