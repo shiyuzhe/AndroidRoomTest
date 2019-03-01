@@ -1,4 +1,4 @@
-package com.syz.androidroomtest
+package com.syz.androidroomtest.room
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import io.reactivex.Flowable
 import io.reactivex.Observable
-import io.reactivex.Single
 
 @Dao
 interface UserDao {

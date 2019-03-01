@@ -1,4 +1,4 @@
-package com.syz.androidroomtest
+package com.syz.androidroomtest.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

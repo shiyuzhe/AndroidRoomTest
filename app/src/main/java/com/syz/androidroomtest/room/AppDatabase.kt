@@ -1,8 +1,9 @@
-package com.syz.androidroomtest
+package com.syz.androidroomtest.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.Room
+import com.syz.androidroomtest.App
 
 @Database(entities = [User::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
