@@ -16,8 +16,20 @@ class MainActivity : BaseActivity(R.layout.activity_main) {
 //        model.getUsers().observeForever {
 //        getUser.text = "data size : $it"
 //        }
+
+//        model.getNetStatus().observeForever {
+//            when(it){
+//                BaseViewModel.NetStatus.SUCCESS -> {Log.e("syz","BaseViewModel.NetStatus.SUCCESS")}
+//                BaseViewModel.NetStatus.ERROR ->  {Log.e("syz","BaseViewModel.NetStatus.ERROR")}
+//                BaseViewModel.NetStatus.NO_NETWORK ->  {Log.e("syz","BaseViewModel.NetStatus.NO_NETWORK")}
+//                null -> {
+//                }
+//            }
+//        }
         model.getUsers().observeForever {  }
+
         model.getUsers().observe(this,androidx.lifecycle.Observer {
+            //
             Log.e("syz","update UI--${it.size}")
             getUser.text = "data size : ${it.size}"
         })

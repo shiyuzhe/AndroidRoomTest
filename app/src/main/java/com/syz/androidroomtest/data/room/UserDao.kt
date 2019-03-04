@@ -1,9 +1,6 @@
-package com.syz.androidroomtest.room
+package com.syz.androidroomtest.data.room
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import io.reactivex.Flowable
 import io.reactivex.Observable
 
@@ -33,8 +30,12 @@ interface UserDao {
      * @Update, and
      * @Delete
      * methods: Room 2.1.0 and higher supports return values of type Completable, Single<T>, and Maybe<T>.
+     *
+     *
+     * onConflict = OnConflictStrategy.REPLACE 主键冲突，重复插入时替换原有数据
      */
-    @Insert
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg users: User)
 
     @Delete

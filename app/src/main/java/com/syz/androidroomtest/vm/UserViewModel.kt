@@ -1,69 +1,50 @@
 package com.syz.androidroomtest.vm
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.syz.androidroomtest.room.AppDatabase
-import com.syz.androidroomtest.room.User
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
-import java.util.concurrent.TimeUnit
+import androidx.lifecycle.ViewModel
+import com.syz.androidroomtest.data.repository.UserRepository
+import com.syz.androidroomtest.data.room.User
 
 
-class UserViewModel: BaseViewModel() {
+class UserViewModel:ViewModel() {
 
+    override fun onCleared() {
+        super.onCleared()
+        userRepository.clear()
+    }
 
-
-    private val users: MutableLiveData<List<User>> by lazy {
-        MutableLiveData<List<User>>().also {
-            loadUsers()
-        }
+    private val userRepository:UserRepository by lazy {
+        UserRepository()
     }
 
     fun getUsers(): LiveData<List<User>> {
-        return users
+        return userRepository.users
     }
 
-    fun addUser(){
-        addDisposable(Observable.range(1, 3).observeOn(Schedulers.io()).map {
-            User("f:$it", "l:$it")
-        }.subscribeBy {
-            AppDatabase.instance.userDao().insertAll(it)
-        })
-    }
+
 
     fun addUserInterval(){
-        addDisposable(Observable.interval(1,TimeUnit.SECONDS).observeOn(Schedulers.io()).map {
-            User("f:$it", "l:$it")
-        }.subscribeBy {
-            AppDatabase.instance.userDao().insertAll(it)
-        })
+        userRepository.addUserInterval()
     }
 
     fun deleteUser(){
-        if(users.value.isNullOrEmpty()){
-            return
+
+        getUsers().value?.get(0)?.let {
+            userRepository.deleteUser(it)
         }
-        addDisposable( Observable.just<User>(users.value?.get(0)).observeOn(Schedulers.io())
-            .subscribeBy {
-                AppDatabase.instance.userDao().delete(it)
-            })
-
     }
 
-    private fun loadUsers() {
-        // Do an asynchronous operation to fetch users.
-        addDisposable(
-            AppDatabase.instance.userDao().getAllUser2().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy {
-                //set on UI Thread
-                users.setValue(it)
-                //set on background Thread
-//                users.postValue(it)
-            })
-        //网络请求
-        //请求成功时更新数据
+    fun deleteUserById(id:Int){
+        getUsers().value?.find(id)?.let {
+            userRepository.deleteUser(it)
+        }
     }
 
+}
+fun List<com.syz.androidroomtest.data.room.User>.find(id:Int):com.syz.androidroomtest.data.room.User?{
+    for (i in this){
+        if(i.uid == id)
+            return i
+    }
+    return null
 }
