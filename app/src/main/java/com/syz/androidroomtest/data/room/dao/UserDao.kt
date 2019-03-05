@@ -1,6 +1,7 @@
-package com.syz.androidroomtest.data.room
+package com.syz.androidroomtest.data.room.dao
 
 import androidx.room.*
+import com.syz.androidroomtest.data.room.bean.User
 import io.reactivex.Flowable
 import io.reactivex.Observable
 

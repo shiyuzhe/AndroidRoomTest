@@ -3,7 +3,7 @@ package com.syz.androidroomtest.vm
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.syz.androidroomtest.data.repository.UserRepository
-import com.syz.androidroomtest.data.room.User
+import com.syz.androidroomtest.data.room.bean.User
 
 
 class UserViewModel:ViewModel() {
@@ -41,7 +41,7 @@ class UserViewModel:ViewModel() {
     }
 
 }
-fun List<com.syz.androidroomtest.data.room.User>.find(id:Int):com.syz.androidroomtest.data.room.User?{
+fun List<User>.find(id:Int): User?{
     for (i in this){
         if(i.uid == id)
             return i

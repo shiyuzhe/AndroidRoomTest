@@ -3,7 +3,7 @@ package com.syz.androidroomtest.data.repository
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.syz.androidroomtest.data.room.AppDatabase
-import com.syz.androidroomtest.data.room.User
+import com.syz.androidroomtest.data.room.bean.User
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -65,7 +65,7 @@ class UserRepository:BaseRepository() {
      * 每秒新增一个
      */
     fun addUserInterval() = Observable.interval(1, TimeUnit.SECONDS).observeOn(Schedulers.io()).map {
-            User("f:$it", "l:$it")
+        User("f:$it", "l:$it")
         }.subscribeBy {
             AppDatabase.instance.userDao().insertAll(it)
         }.let { addDisposable(it) }
